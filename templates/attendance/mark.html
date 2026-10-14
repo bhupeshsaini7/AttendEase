@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Mark Attendance</h1>
+
+<!-- Form 1: choose a date (reloads the page with that date's saved statuses) -->
+<form method="get" action="{{ url_for('attendance.mark') }}" class="row g-2 align-items-end mb-3">
+    <div class="col-auto">
+        <label for="date" class="form-label mb-1">Date</label>
+        <input type="date" class="form-control" id="date" name="date"
+               value="{{ selected_date }}" max="{{ max_date }}" required>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Load</button>
+    </div>
+</form>
+
+<p class="fw-semibold mb-2">{{ display_date }}</p>
+
+{% if already_marked %}
+    <div class="alert alert-info">
+        Attendance for this date was already saved. Saving again will <strong>update</strong> it
+        (no duplicate records are created).
+    </div>
+{% endif %}
+
+{% if students %}
+<!-- Form 2: save attendance -->
+<form method="post" action="{{ url_for('attendance.mark') }}">
+    <input type="hidden" name="attendance_date" value="{{ selected_date }}">
+
+    <div class="mb-2 d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success" id="allPresent">All Present</button>
+        <button type="button" class="btn btn-sm btn-outline-danger" id="allAbsent">All Absent</button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Roll No.</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th class="text-end">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for s in students %}
+                    <tr>
+                        <td class="fw-semibold">{{ s.roll_number }}</td>
+                        <td>{{ s.full_name }}</td>
+                        <td>{{ s.class_name }}</td>
+                        <td class="text-end text-nowrap">
+                            <input type="radio" class="btn-check" name="status_{{ s.student_id }}"
+                                   id="p{{ s.student_id }}" value="Present"
+                                   {% if s.status != 'Absent' %}checked{% endif %}>
+                            <label class="btn btn-sm btn-outline-success" for="p{{ s.student_id }}">Present</label>
+
+                            <input type="radio" class="btn-check" name="status_{{ s.student_id }}"
+                                   id="a{{ s.student_id }}" value="Absent"
+                                   {% if s.status == 'Absent' %}checked{% endif %}>
+                            <label class="btn btn-sm btn-outline-danger" for="a{{ s.student_id }}">Absent</label>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">
+        <i class="bi bi-save me-1"></i>Save Attendance
+    </button>
+</form>
+{% else %}
+    <div class="alert alert-warning">
+        There are no students yet. <a href="{{ url_for('students.add_student') }}">Add a student</a> first.
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('allPresent')?.addEventListener('click', function () {
+        document.querySelectorAll('input[type="radio"][value="Present"]').forEach(r => r.checked = true);
+    });
+    document.getElementById('allAbsent')?.addEventListener('click', function () {
+        document.querySelectorAll('input[type="radio"][value="Absent"]').forEach(r => r.checked = true);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-0">Dashboard</h1>
+        <p class="text-muted mb-0">{{ today_label }}</p>
+    </div>
+    <a href="{{ url_for('attendance.mark') }}" class="btn btn-primary">
+        <i class="bi bi-check2-square me-1"></i>Mark Attendance
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-people"></i></div>
+                <div>
+                    <div class="text-muted small">Total Students</div>
+                    <div class="fs-2 fw-bold">{{ total_students }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-calendar-day"></i></div>
+                <div>
+                    <div class="text-muted small">Today's Attendance</div>
+                    {% if today_marked > 0 %}
+                        <div class="fs-2 fw-bold">{{ today_present }} present</div>
+                        <div class="text-muted small">
+                            {{ today_absent }} absent · {{ today_marked }} of {{ total_students }} marked
+                        </div>
+                    {% else %}
+                        <div class="fs-5 fw-bold">Not marked yet</div>
+                        <a href="{{ url_for('attendance.mark') }}" class="small">Mark it now</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-warning-subtle text-warning-emphasis"><i class="bi bi-percent"></i></div>
+                <div>
+                    <div class="text-muted small">Overall Attendance</div>
+                    <div class="fs-2 fw-bold">{{ overall_percentage }}%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Attendance % by day (most recent 7 days with records)</h2>
+        {% if chart_labels %}
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        {% else %}
+            <p class="text-muted mb-0">No attendance has been recorded yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if chart_labels %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+    new Chart(document.getElementById('trendChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|tojson }},
+            datasets: [{
+                label: 'Attendance %',
+                data: {{ chart_values|tojson }},
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
