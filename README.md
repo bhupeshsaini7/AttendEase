@@ -44,7 +44,7 @@ Attendance percentage is calculated from the records (present days ÷ total reco
 
 1. Clone the repository and open it in VS Code:
 ```
-   git clone [your-repo-url]
+   git clone https://github.com/bhupeshsaini7/AttendEase.git
    cd attendease
 ```
 2. Create a virtual environment and install packages:
