@@ -20,11 +20,16 @@ A web app for managing student records and tracking daily attendance, built with
 - **Database:** MySQL (primary/foreign keys, unique constraints, parameterized queries)
 - **Frontend:** HTML, CSS, Bootstrap 5, Jinja2, Chart.js
 
-## Screenshots
+## 📸 Screenshots
 
-| Students | Mark Attendance | History |
-|---|---|---|
-| ![Students](screenshots/students.png) | ![Mark](screenshots/mark.png) | ![History](screenshots/history.png) |
+### Students
+![Students](screenshots/students.png)
+
+### Mark Attendance
+![Tasks](screenshots/mark.png)
+
+### History
+![Add Task](screenshots/history.png)
 
 ## Database Design
 
